@@ -1,0 +1,108 @@
+import React from 'react';
+import { motion } from 'framer-motion';
+
+interface GalleryItem {
+  id: number;
+  title: string;
+  category: string;
+  image: string;
+}
+
+export default function Gallery() {
+  const galleryItems: GalleryItem[] = [
+    {
+      id: 1,
+      title: "Container Port Operations",
+      category: "Logistics",
+      image: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      id: 2,
+      title: "Premium Spice Sorting",
+      category: "Agriculture",
+      image: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      id: 3,
+      title: "B2B Bulk Warehouse",
+      category: "Storage",
+      image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      id: 4,
+      title: "Textile Combed Yarns",
+      category: "Textiles",
+      image: "https://images.unsplash.com/photo-1528892951291-009c663ce843?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      id: 5,
+      title: "Artisanal Brass Crafting",
+      category: "Handicrafts",
+      image: "https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      id: 6,
+      title: "Industrial Cargo Loading",
+      category: "Export Operations",
+      image: "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      id: 7,
+      title: "Phytosanitary Inspections",
+      category: "Quality Control",
+      image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=600"
+    },
+    {
+      id: 8,
+      title: "Ocean Freight Transit",
+      category: "Global Routes",
+      image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=600"
+    }
+  ];
+
+  return (
+    <section className="py-24 bg-luxury-cream relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+        
+        {/* Header */}
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <span className="text-xs font-semibold tracking-widest uppercase text-luxury-gold-dark">Operational Showcase</span>
+          <h2 className="text-3xl md:text-5xl font-bold font-luxury text-luxury-charcoal mt-3 mb-6">
+            Nexorra Export Operations
+          </h2>
+          <div className="w-16 h-[2px] bg-luxury-gold mx-auto mb-6" />
+          <p className="text-luxury-slate font-light leading-relaxed">
+            A visual overview of our warehouse workflows, phytosanitary test labs, shipping lines container loading, and industrial hubs.
+          </p>
+        </div>
+
+        {/* Masonry Layout */}
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6 [column-fill:_balance] box-border">
+          {galleryItems.map((item) => (
+            <motion.div 
+              key={item.id}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.3 }}
+              className="break-inside-avoid relative rounded-3xl overflow-hidden border border-luxury-gold/10 shadow-premium group cursor-default"
+            >
+              <img 
+                src={item.image} 
+                alt={item.title}
+                className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
+              />
+              
+              {/* Fade Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-luxury-charcoal/80 via-luxury-charcoal/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 text-left" />
+              
+              <div className="absolute bottom-0 left-0 w-full p-6 text-left transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-20">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-luxury-gold">{item.category}</span>
+                <h4 className="text-base font-bold font-luxury text-luxury-white mt-1">{item.title}</h4>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+      </div>
+    </section>
+  );
+}
