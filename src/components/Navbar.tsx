@@ -29,6 +29,7 @@ export default function Navbar({ onInquiryClick }: NavbarProps) {
     { name: 'Packaging',          href: '#packaging' },
     { name: 'Trade Desk',         href: '#trade-desk' },
     { name: 'Contact',            href: '#contact' },
+    { name: 'Careers',            href: '#careers' },
   ];
 
   return (

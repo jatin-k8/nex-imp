@@ -115,7 +115,7 @@ export default function GlobalPresence() {
   const currentLane = shippingLanes.find(l => l.id === activeRegion) || shippingLanes[0];
 
   return (
-    <section id="presence" className="py-16 md:py-24 bg-luxury-charcoal relative overflow-hidden">
+    <section id="presence" className="py-24 bg-luxury-charcoal relative overflow-hidden">
 
       {/* Deep ambient glows */}
       <div className="absolute top-[10%] left-[5%] w-[600px] h-[600px] rounded-full bg-luxury-gold/4 blur-[180px] pointer-events-none" />
@@ -131,12 +131,12 @@ export default function GlobalPresence() {
         }}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 relative z-10">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
 
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-semibold tracking-widest uppercase text-luxury-gold">Worldwide Supply Chain</span>
-          <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-luxury text-luxury-white mt-3 mb-6">
+          <h2 className="text-3xl md:text-5xl font-bold font-luxury text-luxury-white mt-3 mb-6">
             Global Trade & Export Capabilities
           </h2>
           <div className="w-16 h-[2px] bg-luxury-gold mx-auto mb-6" />
@@ -146,7 +146,7 @@ export default function GlobalPresence() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
 
           {/* ── MAP PANEL ── */}
           <div className="lg:col-span-7 relative rounded-3xl overflow-hidden border border-luxury-gold/15 shadow-[0_0_80px_rgba(212,175,55,0.07)]"
@@ -356,6 +356,9 @@ export default function GlobalPresence() {
                     <div className="flex items-center gap-1.5 mt-1 text-xs text-luxury-gold font-medium">
                       <Clock className="w-3.5 h-3.5" />
                       <span>{currentLane.transit}</span>
+                    </div>
+                    <div className="mt-1 text-[10px] text-neutral-500 italic">
+                      ⚠ Tentative estimate — actual transit may vary based on port congestion, carrier schedule, and customs clearance.
                     </div>
                   </div>
                 </div>
