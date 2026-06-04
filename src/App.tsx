@@ -18,12 +18,16 @@ export default function App() {
 
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
+    if (el) el.scrollIntoView({
+       behavior: 'smooth',
+      block: 'start'
+   });
 
   const handleQuoteRequest = (productName: string) => {
     setSelectedProduct(productName);
-    scrollToSection('contact');
+     setTimeout(() => {
+      scrollToSection('contact');
+    }, 100);
   };
 
   return (
