@@ -20,8 +20,10 @@ export default function App() {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({
        behavior: 'smooth',
-      block: 'start'
+      block: 'start',
    });
+  }
+};
 
   const handleQuoteRequest = (productName: string) => {
     setSelectedProduct(productName);
