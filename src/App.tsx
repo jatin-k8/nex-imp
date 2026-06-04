@@ -24,7 +24,10 @@ export default function App() {
 
   const handleQuoteRequest = (productName: string) => {
     setSelectedProduct(productName);
-    scrollToSection('contact');
+
+    setTimeout(() => {
+      scrollToSection('contact');
+    }, 100);
   };
 
   return (
