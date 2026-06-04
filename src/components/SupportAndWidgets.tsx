@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  MessageSquare, Compass, Send, CheckCircle2, 
-  MapPin, DollarSign, Calculator, ChevronRight, HelpCircle
+import {
+  MessageSquare, Compass, Send, CheckCircle2,
+  MapPin, DollarSign, Calculator, ChevronRight,
+  HelpCircle, RefreshCw, Wifi, WifiOff
 } from 'lucide-react';
 
 interface TrackerStep {
@@ -11,10 +12,15 @@ interface TrackerStep {
   status: 'current' | 'completed';
 }
 
+const CURRENCIES = ['USD', 'INR', 'EUR', 'AED', 'GBP', 'SGD', 'JPY', 'SAR'];
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  USD: '$', INR: '₹', EUR: '€', AED: 'د.إ', GBP: '£', SGD: 'S$', JPY: '¥', SAR: '﷼'
+};
+
 export default function SupportAndWidgets() {
   const [activeWidget, setActiveWidget] = useState<'chat' | 'tracker' | 'currency'>('chat');
 
-  // --- Chatbot Simulator State ---
+  // ── CHATBOT ──────────────────────────────────────────────────────
   const [chatMessages, setChatMessages] = useState<Array<{ sender: 'bot' | 'user'; text: string }>>([
     { sender: 'bot', text: "Welcome to the Nexorra Impex trade desk. I am your B2B trade consultant. Ask me about product MOQs, shipping parameters, or custom packaging options!" }
   ]);
@@ -22,11 +28,11 @@ export default function SupportAndWidgets() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const chatbotResponses = {
-    moq: "Our standard Minimum Order Quantities (MOQs) depend on the category:\n- Onion Powder/Flakes & Garlic: 5 Metric Tons (MT)\n- Coffee & Tea Blends: 2 MT\n- Textiles/Cotton: 1 FCL (Full Container Load)\nWe also support mixed-product containers for trial B2B shipments.",
-    shipping: "We ship globally from Nhava Sheva (JNPT) or Mundra Port, India. We accommodate FOB, CIF, CFR, and DDP shipping terms to standard international ports.",
-    packaging: "We offer Vacuum Packaging, Moisture-Resistant multi-layer bags, Heavy-Duty PP Bags (25kg/50kg), and Bulk Kraft Drums. Private labeling is supported.",
-    contact: "You can reach our founder, Hrushabh Manoj Gadiya, directly via email at nexorra.impex95@gmail.com or by WhatsApp at +91 77440 96751. Our registered office is located at Bhosari, Pune, India."
+  const chatbotResponses: Record<string, string> = {
+    moq: "Our standard Minimum Order Quantities (MOQs):\n- Onion Powder/Flakes & Garlic: 5 Metric Tons\n- Coffee & Tea Blends: 2 MT\n- Textiles/Cotton: 1 FCL\nWe support mixed-product containers for trial B2B shipments.",
+    shipping: "We ship globally from Nhava Sheva (JNPT) or Mundra Port. We accommodate FOB, CIF, CFR, and DDP shipping terms.",
+    packaging: "We offer Vacuum Packaging, Moisture-Resistant multi-layer bags, PP Bags (25kg/50kg), and Bulk Kraft Drums. Private labeling supported.",
+    contact: "Reach our founder Hrushabh Manoj Gadiya via WhatsApp +91 77440 96751 or email nexorra.impex95@gmail.com. Office: Bhosari, Pune – 411039, Maharashtra, India."
   };
 
   const handleSendMessage = (text: string) => {
@@ -34,22 +40,14 @@ export default function SupportAndWidgets() {
     setChatMessages(prev => [...prev, { sender: 'user', text }]);
     setChatInput('');
     setIsTyping(true);
-
     setTimeout(() => {
       setIsTyping(false);
-      const query = text.toLowerCase();
-      let reply = "Thank you for your inquiry. For specific product configurations or customized commercial quotes, please use our main 'Request Quote' form below or email nexorra.impex95@gmail.com. We typically respond within 2 hours.";
-
-      if (query.includes('moq') || query.includes('minimum order') || query.includes('quantity')) {
-        reply = chatbotResponses.moq;
-      } else if (query.includes('ship') || query.includes('delivery') || query.includes('logistic') || query.includes('port')) {
-        reply = chatbotResponses.shipping;
-      } else if (query.includes('package') || query.includes('box') || query.includes('label')) {
-        reply = chatbotResponses.packaging;
-      } else if (query.includes('contact') || query.includes('founder') || query.includes('phone') || query.includes('hrushabh')) {
-        reply = chatbotResponses.contact;
-      }
-
+      const q = text.toLowerCase();
+      let reply = "Thank you for your inquiry. For custom quotes please use our 'Request Quote' form below or email nexorra.impex95@gmail.com. We respond within 2 hours.";
+      if (q.includes('moq') || q.includes('minimum') || q.includes('quantity')) reply = chatbotResponses.moq;
+      else if (q.includes('ship') || q.includes('delivery') || q.includes('port')) reply = chatbotResponses.shipping;
+      else if (q.includes('packag') || q.includes('box') || q.includes('label')) reply = chatbotResponses.packaging;
+      else if (q.includes('contact') || q.includes('founder') || q.includes('phone') || q.includes('hrushabh')) reply = chatbotResponses.contact;
       setChatMessages(prev => [...prev, { sender: 'bot', text: reply }]);
     }, 1200);
   };
@@ -58,20 +56,20 @@ export default function SupportAndWidgets() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages, isTyping]);
 
-  // --- Tracker State ---
+  // ── CARGO TRACKER ────────────────────────────────────────────────
   const [trackerInput, setTrackerInput] = useState('');
   const [trackingResult, setTrackingResult] = useState<TrackerStep[] | null>(null);
   const [trackedId, setTrackedId] = useState('');
 
   const mockShipments: Record<string, TrackerStep[]> = {
     'NEX-9872-IN': [
-      { title: 'In Transit - Arabian Sea', date: 'May 23, 2026', status: 'current' },
-      { title: 'Customs Cleared - Nhava Sheva Port', date: 'May 20, 2026', status: 'completed' },
+      { title: 'In Transit — Arabian Sea', date: 'May 23, 2026', status: 'current' },
+      { title: 'Customs Cleared — Nhava Sheva Port', date: 'May 20, 2026', status: 'completed' },
       { title: 'Quality Assurance Approved', date: 'May 18, 2026', status: 'completed' },
       { title: 'Cargo Loaded & Sealed', date: 'May 17, 2026', status: 'completed' }
     ],
     'NEX-4510-US': [
-      { title: 'Out for Delivery - Rotterdam Terminal', date: 'May 22, 2026', status: 'current' },
+      { title: 'Out for Delivery — Rotterdam Terminal', date: 'May 22, 2026', status: 'current' },
       { title: 'Port of Hamburg Customs Clearance', date: 'May 19, 2026', status: 'completed' },
       { title: 'Atlantic Ocean Crossing', date: 'May 10, 2026', status: 'completed' },
       { title: 'Sourced from Manufacturer (Pune Hub)', date: 'May 04, 2026', status: 'completed' }
@@ -82,76 +80,78 @@ export default function SupportAndWidgets() {
     e.preventDefault();
     const id = trackerInput.trim().toUpperCase();
     if (!id) return;
-
     setTrackedId(id);
-    if (mockShipments[id]) {
-      setTrackingResult(mockShipments[id]);
-    } else {
-      // Simulate a generic tracker flow for other IDs
-      setTrackingResult([
-        { title: 'Initiating Customs Clearance', date: 'In Progress', status: 'current' },
-        { title: 'Container Loaded at Pune Hub', date: 'May 22, 2026', status: 'completed' },
-        { title: 'Procurement & Packaging Completed', date: 'May 20, 2026', status: 'completed' },
-        { title: 'B2B Invoice & LC Verified', date: 'May 19, 2026', status: 'completed' }
-      ]);
-    }
+    setTrackingResult(mockShipments[id] ?? [
+      { title: 'Initiating Customs Clearance', date: 'In Progress', status: 'current' },
+      { title: 'Container Loaded at Pune Hub', date: 'May 22, 2026', status: 'completed' },
+      { title: 'Procurement & Packaging Completed', date: 'May 20, 2026', status: 'completed' },
+      { title: 'B2B Invoice & LC Verified', date: 'May 19, 2026', status: 'completed' }
+    ]);
   };
 
-  // --- Currency Converter State ---
-  const [amount, setAmount] = useState('10000');
+  // ── LIVE CURRENCY ────────────────────────────────────────────────
+  const [amount, setAmount] = useState('1000');
   const [baseCurrency, setBaseCurrency] = useState('USD');
   const [targetCurrency, setTargetCurrency] = useState('INR');
+  const [rates, setRates] = useState<Record<string, number>>({});
+  const [ratesLoading, setRatesLoading] = useState(false);
+  const [ratesError, setRatesError] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState('');
   const [conversionResult, setConversionResult] = useState('');
 
-  const exchangeRates: Record<string, number> = {
-    USD: 1.0,
-    INR: 83.50,
-    EUR: 0.92,
-    AED: 3.67,
-    GBP: 0.79,
-    SGD: 1.35
-  };
-
-  const handleConvert = (e: React.FormEvent) => {
-    e.preventDefault();
-    const val = parseFloat(amount);
-    if (isNaN(val) || val <= 0) return;
-
-    const baseRate = exchangeRates[baseCurrency];
-    const targetRate = exchangeRates[targetCurrency];
-    
-    const amountInUSD = val / baseRate;
-    const converted = amountInUSD * targetRate;
-
-    setConversionResult(`${targetCurrency} ${converted.toLocaleString(undefined, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })}`);
-  };
-
-  // Trigger conversion initially and on currency change
-  useEffect(() => {
-    const val = parseFloat(amount);
-    if (!isNaN(val) && val > 0) {
-      const baseRate = exchangeRates[baseCurrency];
-      const targetRate = exchangeRates[targetCurrency];
-      const amountInUSD = val / baseRate;
-      const converted = amountInUSD * targetRate;
-      setConversionResult(`${targetCurrency} ${converted.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      })}`);
+  // Fetch live rates from free public API (no key required)
+  const fetchRates = async () => {
+    setRatesLoading(true);
+    setRatesError(false);
+    try {
+      // Using exchangerate-api free tier — returns USD base rates
+      const res = await fetch('https://open.er-api.com/v6/latest/USD');
+      const data = await res.json();
+      if (data.result === 'success') {
+        setRates(data.rates);
+        const now = new Date();
+        setLastUpdated(now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) + ' IST');
+      } else {
+        throw new Error('API error');
+      }
+    } catch {
+      setRatesError(true);
+      // Fallback to approximate current rates (May 2026)
+      setRates({
+        USD: 1, INR: 84.92, EUR: 0.923, AED: 3.6725,
+        GBP: 0.792, SGD: 1.348, JPY: 155.4, SAR: 3.75
+      });
+      setLastUpdated('Offline (cached)');
     }
-  }, [baseCurrency, targetCurrency, amount]);
+    setRatesLoading(false);
+  };
 
-  // --- B2B Live Toast Notifications State ---
+  useEffect(() => { fetchRates(); }, []);
+
+  // Recalculate whenever inputs change
+  useEffect(() => {
+    if (Object.keys(rates).length === 0) return;
+    const val = parseFloat(amount);
+    if (isNaN(val) || val <= 0) { setConversionResult(''); return; }
+    const inUSD = val / (rates[baseCurrency] ?? 1);
+    const converted = inUSD * (rates[targetCurrency] ?? 1);
+    const sym = CURRENCY_SYMBOLS[targetCurrency] ?? '';
+    setConversionResult(`${sym} ${converted.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+  }, [rates, amount, baseCurrency, targetCurrency]);
+
+  // Reference rate display (1 base = X target)
+  const refRate = Object.keys(rates).length > 0
+    ? ((rates[targetCurrency] ?? 1) / (rates[baseCurrency] ?? 1)).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 4 })
+    : '—';
+
+  // ── TOAST ────────────────────────────────────────────────────────
   const [toast, setToast] = useState<{ title: string; body: string } | null>(null);
   const simulatedInquiries = [
-    { title: "New Quotation Filed", body: "Buyer in Hamburg, Germany requested a quote for 10 MT Red Onion Powder." },
-    { title: "Cargo Loading Initiated", body: "Shipment NEX-9872-IN loading Nhava Sheva Port, heading to Jeddah, KSA." },
-    { title: "Contract Finalized", body: "Distributor in Dubai, UAE closed bulk packaging contract for Coffee Dust." },
-    { title: "Product Batch Certified", body: "Batch #4102 Garlic Granules cleared 100% SGS lab inspection for export." },
-    { title: "Specs Requested", body: "Textile buyer in Tokyo, Japan requested specifications for 40ft FCL cotton yarn." }
+    { title: "New Quotation Filed", body: "Buyer in Hamburg requested quote for 10 MT Red Onion Powder." },
+    { title: "Cargo Loading Initiated", body: "Shipment NEX-9872-IN loading at Nhava Sheva, heading to Jeddah." },
+    { title: "Contract Finalized", body: "Distributor in Dubai closed bulk packaging contract for Coffee." },
+    { title: "Batch Certified", body: "Batch #4102 Garlic Granules cleared 100% SGS lab inspection." },
+    { title: "Specs Requested", body: "Tokyo buyer requested specs for 40ft FCL cotton yarn." }
   ];
 
   useEffect(() => {
@@ -159,197 +159,125 @@ export default function SupportAndWidgets() {
     const interval = setInterval(() => {
       setToast(simulatedInquiries[index]);
       index = (index + 1) % simulatedInquiries.length;
-      
-      // Clear toast after 5 seconds
-      setTimeout(() => {
-        setToast(null);
-      }, 5000);
-      
-    }, 18000); // Trigger every 18 seconds
-
+      setTimeout(() => setToast(null), 5000);
+    }, 18000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <section id="trade-desk" className="py-24 bg-luxury-white relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
-        
+    <section id="trade-desk" className="py-16 md:py-24 bg-luxury-white relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-4 sm:px-6 lg:px-12 relative z-10">
+
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-semibold tracking-widest uppercase text-luxury-gold-dark">Interactive B2B Tools</span>
-          <h2 className="text-3xl md:text-5xl font-bold font-luxury text-luxury-charcoal mt-3 mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold font-luxury text-luxury-charcoal mt-3 mb-6">
             B2B Global Trade Console
           </h2>
           <div className="w-16 h-[2px] bg-luxury-gold mx-auto mb-6" />
           <p className="text-luxury-slate font-light leading-relaxed">
-            Utilize our digital trade desk to query export parameters, track container clearances, or estimate order values.
+            Query export parameters, track container clearances, or convert order values using live exchange rates.
           </p>
         </div>
 
-        {/* Console Box Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-stretch max-w-5xl mx-auto">
-          
-          {/* Navigation Tabs (Left/Top) */}
-          <div className="lg:col-span-4 flex flex-row lg:flex-col gap-3 justify-center lg:justify-start">
-            <button
-              onClick={() => setActiveWidget('chat')}
-              className={`flex-1 lg:flex-initial px-6 py-4 rounded-2xl text-left border text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-3 ${
-                activeWidget === 'chat'
-                  ? 'bg-luxury-charcoal text-luxury-white border-luxury-charcoal shadow-md'
-                  : 'bg-luxury-cream text-luxury-slate border-luxury-gold/10 hover:border-luxury-gold hover:text-luxury-charcoal'
-              }`}
-            >
-              <MessageSquare className="w-4 h-4 shrink-0" />
-              <span>AI Trade Consultant</span>
-            </button>
-            
-            <button
-              onClick={() => setActiveWidget('tracker')}
-              className={`flex-1 lg:flex-initial px-6 py-4 rounded-2xl text-left border text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-3 ${
-                activeWidget === 'tracker'
-                  ? 'bg-luxury-charcoal text-luxury-white border-luxury-charcoal shadow-md'
-                  : 'bg-luxury-cream text-luxury-slate border-luxury-gold/10 hover:border-luxury-gold hover:text-luxury-charcoal'
-              }`}
-            >
-              <Compass className="w-4 h-4 shrink-0" />
-              <span>Cargo Tracker</span>
-            </button>
+        {/* Console Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch max-w-5xl mx-auto">
 
-            <button
-              onClick={() => setActiveWidget('currency')}
-              className={`flex-1 lg:flex-initial px-6 py-4 rounded-2xl text-left border text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-3 ${
-                activeWidget === 'currency'
-                  ? 'bg-luxury-charcoal text-luxury-white border-luxury-charcoal shadow-md'
-                  : 'bg-luxury-cream text-luxury-slate border-luxury-gold/10 hover:border-luxury-gold hover:text-luxury-charcoal'
-              }`}
-            >
-              <Calculator className="w-4 h-4 shrink-0" />
-              <span>Currency Desk</span>
-            </button>
+          {/* Tab buttons */}
+          <div className="lg:col-span-4 flex flex-row lg:flex-col gap-2 sm:gap-3 overflow-x-auto lg:overflow-visible pb-1 lg:pb-0">
+            {[
+              { id: 'chat',     icon: MessageSquare, label: 'AI Trade Consultant' },
+              { id: 'tracker',  icon: Compass,       label: 'Cargo Tracker' },
+              { id: 'currency', icon: Calculator,    label: 'Currency Desk' },
+            ].map(({ id, icon: Icon, label }) => (
+              <button key={id} onClick={() => setActiveWidget(id as any)}
+                className={`flex-1 lg:flex-initial px-4 sm:px-6 py-4 rounded-2xl text-left border text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-3 ${
+                  activeWidget === id
+                    ? 'bg-luxury-charcoal text-luxury-white border-luxury-charcoal shadow-md'
+                    : 'bg-luxury-cream text-luxury-slate border-luxury-gold/10 hover:border-luxury-gold hover:text-luxury-charcoal'
+                }`}>
+                <Icon className="w-4 h-4 shrink-0" />
+                <span className="hidden sm:inline">{label}</span>
+              </button>
+            ))}
           </div>
 
-          {/* Console Display Screen (Right/Bottom) */}
-          <div className="lg:col-span-8 bg-gradient-to-br from-luxury-cream to-luxury-white border border-luxury-gold/20 rounded-3xl p-6 md:p-8 shadow-premium min-h-[420px] flex flex-col justify-between">
-            
+          {/* Console Panel */}
+          <div className="lg:col-span-8 bg-gradient-to-br from-luxury-cream to-luxury-white border border-luxury-gold/20 rounded-3xl p-5 sm:p-8 shadow-premium min-h-[420px] flex flex-col">
             <AnimatePresence mode="wait">
-              {/* 1. AI Chatbot Widget */}
+
+              {/* ── CHATBOT ── */}
               {activeWidget === 'chat' && (
-                <motion.div
-                  key="chat-panel"
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex flex-col h-full justify-between"
-                >
-                  <div className="text-left border-b border-luxury-gold/10 pb-4 mb-4">
+                <motion.div key="chat" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.3 }} className="flex flex-col h-full">
+                  <div className="border-b border-luxury-gold/10 pb-4 mb-4">
                     <h4 className="text-lg font-bold font-luxury text-luxury-charcoal">Nexorra AI Assistant</h4>
                     <span className="text-[10px] text-luxury-gold-dark font-semibold tracking-wider uppercase">Online B2B Sourcing Support</span>
                   </div>
-
-                  {/* Message Log */}
-                  <div className="flex-grow overflow-y-auto max-h-[250px] pr-2 flex flex-col gap-3 mb-4">
+                  <div className="flex-grow overflow-y-auto max-h-[220px] sm:max-h-[250px] pr-1 flex flex-col gap-3 mb-4">
                     {chatMessages.map((msg, i) => (
-                      <div 
-                        key={i} 
-                        className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-xs md:text-sm text-left leading-relaxed ${
-                          msg.sender === 'bot' 
-                            ? 'bg-luxury-white border border-luxury-gold/10 text-luxury-slate self-start' 
-                            : 'bg-luxury-charcoal text-luxury-white self-end'
-                        }`}
-                        style={{ whiteSpace: 'pre-line' }}
-                      >
-                        {msg.text}
-                      </div>
+                      <div key={i} className={`max-w-[88%] rounded-2xl px-4 py-2.5 text-xs md:text-sm leading-relaxed ${
+                        msg.sender === 'bot'
+                          ? 'bg-luxury-white border border-luxury-gold/10 text-luxury-slate self-start'
+                          : 'bg-luxury-charcoal text-luxury-white self-end'
+                      }`} style={{ whiteSpace: 'pre-line' }}>{msg.text}</div>
                     ))}
                     {isTyping && (
-                      <div className="bg-luxury-white border border-luxury-gold/5 text-luxury-gold-dark max-w-[50%] rounded-2xl px-4 py-2.5 text-xs self-start italic">
-                        Nexorra consultant is preparing answer...
+                      <div className="bg-luxury-white border border-luxury-gold/5 text-luxury-gold-dark max-w-[60%] rounded-2xl px-4 py-2.5 text-xs self-start italic">
+                        Preparing answer...
                       </div>
                     )}
                     <div ref={messagesEndRef} />
                   </div>
-
-                  {/* Preset chips */}
-                  <div className="flex flex-wrap gap-2 mb-4 justify-start">
-                    <button onClick={() => handleSendMessage("Minimum Order Quantity (MOQ)?")} className="px-3 py-1.5 rounded-lg bg-luxury-white border border-luxury-gold/15 text-[10px] font-medium text-luxury-slate hover:border-luxury-gold hover:text-luxury-charcoal transition-all">MOQs</button>
-                    <button onClick={() => handleSendMessage("From which port do you ship?")} className="px-3 py-1.5 rounded-lg bg-luxury-white border border-luxury-gold/15 text-[10px] font-medium text-luxury-slate hover:border-luxury-gold hover:text-luxury-charcoal transition-all">Ports & Shipping</button>
-                    <button onClick={() => handleSendMessage("Custom private packaging options?")} className="px-3 py-1.5 rounded-lg bg-luxury-white border border-luxury-gold/15 text-[10px] font-medium text-luxury-slate hover:border-luxury-gold hover:text-luxury-charcoal transition-all">Packaging Specs</button>
-                    <button onClick={() => handleSendMessage("How can I contact the founder?")} className="px-3 py-1.5 rounded-lg bg-luxury-white border border-luxury-gold/15 text-[10px] font-medium text-luxury-slate hover:border-luxury-gold hover:text-luxury-charcoal transition-all">Direct Contact</button>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {["MOQs", "Ports & Shipping", "Packaging", "Direct Contact"].map((chip) => (
+                      <button key={chip} onClick={() => handleSendMessage(chip)}
+                        className="px-3 py-1.5 rounded-lg bg-luxury-white border border-luxury-gold/15 text-[10px] font-medium text-luxury-slate hover:border-luxury-gold hover:text-luxury-charcoal transition-all">
+                        {chip}
+                      </button>
+                    ))}
                   </div>
-
-                  {/* Form input */}
                   <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={chatInput}
+                    <input type="text" value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleSendMessage(chatInput)}
                       placeholder="Type your B2B sourcing question..."
-                      className="flex-grow bg-luxury-white border border-luxury-gold/15 rounded-xl px-4 py-2.5 text-xs md:text-sm text-luxury-charcoal focus:outline-none focus:border-luxury-gold"
-                    />
-                    <button 
-                      onClick={() => handleSendMessage(chatInput)}
-                      className="w-10 h-10 rounded-xl bg-luxury-charcoal hover:bg-luxury-gold-dark flex items-center justify-center text-luxury-white transition-all shadow-md shrink-0"
-                    >
+                      className="flex-grow bg-luxury-white border border-luxury-gold/15 rounded-xl px-4 py-2.5 text-xs md:text-sm text-luxury-charcoal focus:outline-none focus:border-luxury-gold" />
+                    <button onClick={() => handleSendMessage(chatInput)}
+                      className="w-10 h-10 rounded-xl bg-luxury-charcoal hover:bg-luxury-gold-dark flex items-center justify-center text-luxury-white transition-all shadow-md shrink-0">
                       <Send className="w-4 h-4" />
                     </button>
                   </div>
                 </motion.div>
               )}
 
-              {/* 2. Cargo Tracker Widget */}
+              {/* ── TRACKER ── */}
               {activeWidget === 'tracker' && (
-                <motion.div
-                  key="tracker-panel"
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex flex-col h-full justify-between"
-                >
-                  <div className="text-left border-b border-luxury-gold/10 pb-4 mb-4">
-                    <h4 className="text-lg font-bold font-luxury text-luxury-charcoal">Real-time Port Tracker</h4>
+                <motion.div key="tracker" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.3 }} className="flex flex-col h-full">
+                  <div className="border-b border-luxury-gold/10 pb-4 mb-4">
+                    <h4 className="text-lg font-bold font-luxury text-luxury-charcoal">Port Tracker</h4>
                     <span className="text-[10px] text-luxury-gold-dark font-semibold tracking-wider uppercase">B2B Cargo Clearance Status</span>
                   </div>
-
                   <form onSubmit={handleTrackShipment} className="flex gap-2 mb-6">
-                    <input
-                      type="text"
-                      value={trackerInput}
+                    <input type="text" value={trackerInput}
                       onChange={(e) => setTrackerInput(e.target.value)}
-                      placeholder="Enter B2B Shipment ID (e.g. NEX-9872-IN, NEX-4510-US)"
-                      className="flex-grow bg-luxury-white border border-luxury-gold/15 rounded-xl px-4 py-2.5 text-xs md:text-sm text-luxury-charcoal uppercase focus:outline-none focus:border-luxury-gold"
-                    />
-                    <button 
-                      type="submit"
-                      className="px-6 py-2.5 rounded-xl bg-luxury-charcoal hover:bg-luxury-gold-dark text-xs font-semibold uppercase tracking-wider text-luxury-white transition-all shadow-md"
-                    >
+                      placeholder="e.g. NEX-9872-IN"
+                      className="flex-grow bg-luxury-white border border-luxury-gold/15 rounded-xl px-4 py-2.5 text-xs md:text-sm text-luxury-charcoal uppercase focus:outline-none focus:border-luxury-gold" />
+                    <button type="submit" className="px-5 py-2.5 rounded-xl bg-luxury-charcoal hover:bg-luxury-gold-dark text-xs font-semibold uppercase tracking-wider text-luxury-white transition-all shadow-md whitespace-nowrap">
                       Track
                     </button>
                   </form>
-
-                  {/* Tracker display */}
                   <div className="flex-grow flex flex-col justify-center">
                     {trackingResult ? (
                       <div className="text-left">
-                        <span className="text-[10px] font-bold uppercase tracking-widest text-luxury-gold-dark mb-4 block">
-                          Cargo Logistics Log for {trackedId}
-                        </span>
-                        
+                        <span className="text-[10px] font-bold uppercase tracking-widest text-luxury-gold-dark mb-4 block">Log: {trackedId}</span>
                         <div className="relative pl-6 border-l border-luxury-gold/30 flex flex-col gap-4">
                           {trackingResult.map((step, idx) => (
                             <div key={idx} className="relative">
-                              {/* Connector dot */}
                               <div className={`absolute -left-[30px] top-1.5 w-3 h-3 rounded-full border-2 ${
-                                step.status === 'current' 
-                                  ? 'bg-luxury-gold border-luxury-gold-dark animate-ping-once' 
-                                  : 'bg-luxury-gold-dark border-luxury-white shadow-sm'
+                                step.status === 'current' ? 'bg-luxury-gold border-luxury-gold-dark' : 'bg-luxury-gold-dark border-luxury-white shadow-sm'
                               }`} />
-                              <div className="flex flex-col">
-                                <span className={`text-xs md:text-sm font-bold ${step.status === 'current' ? 'text-luxury-gold-dark' : 'text-luxury-charcoal'}`}>{step.title}</span>
-                                <span className="text-[10px] text-luxury-slate font-light mt-0.5">{step.date}</span>
-                              </div>
+                              <span className={`text-xs md:text-sm font-bold block ${step.status === 'current' ? 'text-luxury-gold-dark' : 'text-luxury-charcoal'}`}>{step.title}</span>
+                              <span className="text-[10px] text-luxury-slate font-light mt-0.5 block">{step.date}</span>
                             </div>
                           ))}
                         </div>
@@ -358,7 +286,7 @@ export default function SupportAndWidgets() {
                       <div className="flex flex-col items-center justify-center text-center text-luxury-slate gap-3 py-6">
                         <HelpCircle className="w-10 h-10 text-luxury-gold/40" />
                         <p className="text-xs font-light max-w-xs leading-relaxed">
-                          Enter your container billing number or use test tracking IDs: <strong>NEX-9872-IN</strong> or <strong>NEX-4510-US</strong>.
+                          Try test IDs: <strong>NEX-9872-IN</strong> or <strong>NEX-4510-US</strong>
                         </p>
                       </div>
                     )}
@@ -366,104 +294,124 @@ export default function SupportAndWidgets() {
                 </motion.div>
               )}
 
-              {/* 3. Currency Desk Widget */}
+              {/* ── CURRENCY DESK (LIVE) ── */}
               {activeWidget === 'currency' && (
-                <motion.div
-                  key="currency-panel"
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex flex-col h-full justify-between"
-                >
-                  <div className="text-left border-b border-luxury-gold/10 pb-4 mb-4">
-                    <h4 className="text-lg font-bold font-luxury text-luxury-charcoal">Exchange Calculator</h4>
-                    <span className="text-[10px] text-luxury-gold-dark font-semibold tracking-wider uppercase">B2B Commercial Value Conversion</span>
+                <motion.div key="currency" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.3 }} className="flex flex-col h-full">
+                  
+                  {/* Header with live status */}
+                  <div className="border-b border-luxury-gold/10 pb-4 mb-5 flex items-start justify-between gap-2">
+                    <div>
+                      <h4 className="text-lg font-bold font-luxury text-luxury-charcoal">Live Exchange Calculator</h4>
+                      <span className="text-[10px] text-luxury-gold-dark font-semibold tracking-wider uppercase">Real-Time B2B Currency Conversion</span>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {ratesLoading ? (
+                        <RefreshCw className="w-3.5 h-3.5 text-luxury-gold-dark animate-spin" />
+                      ) : ratesError ? (
+                        <WifiOff className="w-3.5 h-3.5 text-red-400" />
+                      ) : (
+                        <Wifi className="w-3.5 h-3.5 text-green-500" />
+                      )}
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-luxury-slate">
+                        {ratesLoading ? 'Fetching...' : ratesError ? 'Cached' : 'Live'}
+                      </span>
+                      <button onClick={fetchRates} title="Refresh rates"
+                        className="w-6 h-6 rounded-lg bg-luxury-gold/10 flex items-center justify-center hover:bg-luxury-gold/20 transition-all">
+                        <RefreshCw className="w-3 h-3 text-luxury-gold-dark" />
+                      </button>
+                    </div>
                   </div>
 
-                  <form onSubmit={handleConvert} className="flex flex-col gap-6 text-left flex-grow justify-center">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+                  <div className="flex flex-col gap-5 flex-grow justify-center">
+
+                    {/* Inputs */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
                       <div className="flex flex-col gap-1.5">
                         <label className="text-[10px] uppercase font-bold tracking-widest text-luxury-gold-dark">Order Value</label>
-                        <input
-                          type="number"
-                          value={amount}
-                          onChange={(e) => setAmount(e.target.value)}
-                          className="bg-luxury-white border border-luxury-gold/15 rounded-xl px-4 py-2.5 text-xs md:text-sm text-luxury-charcoal focus:outline-none focus:border-luxury-gold"
-                        />
+                        <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)}
+                          className="bg-luxury-white border border-luxury-gold/15 rounded-xl px-4 py-2.5 text-sm text-luxury-charcoal focus:outline-none focus:border-luxury-gold w-full" />
                       </div>
-
                       <div className="flex flex-col gap-1.5">
-                        <label className="text-[10px] uppercase font-bold tracking-widest text-luxury-gold-dark">Base Currency</label>
-                        <select
-                          value={baseCurrency}
-                          onChange={(e) => setBaseCurrency(e.target.value)}
-                          className="bg-luxury-white border border-luxury-gold/15 rounded-xl px-4 py-2.5 text-xs md:text-sm text-luxury-charcoal focus:outline-none focus:border-luxury-gold"
-                        >
-                          <option value="USD">USD ($)</option>
-                          <option value="INR">INR (₹)</option>
-                          <option value="EUR">EUR (€)</option>
-                          <option value="AED">AED (د.إ)</option>
-                          <option value="GBP">GBP (£)</option>
-                          <option value="SGD">SGD ($)</option>
+                        <label className="text-[10px] uppercase font-bold tracking-widest text-luxury-gold-dark">From</label>
+                        <select value={baseCurrency} onChange={(e) => setBaseCurrency(e.target.value)}
+                          className="bg-luxury-white border border-luxury-gold/15 rounded-xl px-4 py-2.5 text-sm text-luxury-charcoal focus:outline-none focus:border-luxury-gold w-full">
+                          {CURRENCIES.map(c => <option key={c} value={c}>{c} {CURRENCY_SYMBOLS[c]}</option>)}
                         </select>
                       </div>
-
                       <div className="flex flex-col gap-1.5">
-                        <label className="text-[10px] uppercase font-bold tracking-widest text-luxury-gold-dark">Target Currency</label>
-                        <select
-                          value={targetCurrency}
-                          onChange={(e) => setTargetCurrency(e.target.value)}
-                          className="bg-luxury-white border border-luxury-gold/15 rounded-xl px-4 py-2.5 text-xs md:text-sm text-luxury-charcoal focus:outline-none focus:border-luxury-gold"
-                        >
-                          <option value="INR">INR (₹)</option>
-                          <option value="USD">USD ($)</option>
-                          <option value="EUR">EUR (€)</option>
-                          <option value="AED">AED (د.إ)</option>
-                          <option value="GBP">GBP (£)</option>
-                          <option value="SGD">SGD ($)</option>
+                        <label className="text-[10px] uppercase font-bold tracking-widest text-luxury-gold-dark">To</label>
+                        <select value={targetCurrency} onChange={(e) => setTargetCurrency(e.target.value)}
+                          className="bg-luxury-white border border-luxury-gold/15 rounded-xl px-4 py-2.5 text-sm text-luxury-charcoal focus:outline-none focus:border-luxury-gold w-full">
+                          {CURRENCIES.map(c => <option key={c} value={c}>{c} {CURRENCY_SYMBOLS[c]}</option>)}
                         </select>
                       </div>
                     </div>
 
-                    <div className="bg-luxury-white border border-luxury-gold/10 rounded-2xl p-6 flex flex-col items-start gap-1 justify-center shadow-inner">
-                      <span className="text-[10px] uppercase font-bold tracking-widest text-luxury-slate">Estimated Conversion Value</span>
-                      <span className="text-xl md:text-2xl font-bold text-luxury-gold-dark font-sans">{conversionResult || "Enter Amount..."}</span>
-                      <span className="text-[9px] text-neutral-400 font-light mt-1">Rates are indicative of daily B2B clearing metrics.</span>
+                    {/* Result card */}
+                    <div className="bg-luxury-white border border-luxury-gold/15 rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-inner">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[10px] uppercase font-bold tracking-widest text-luxury-slate">Converted Amount</span>
+                        <span className="text-2xl sm:text-3xl font-bold text-luxury-gold-dark font-sans">
+                          {ratesLoading ? '...' : (conversionResult || '—')}
+                        </span>
+                        <span className="text-[10px] text-neutral-400 font-light mt-0.5">
+                          1 {baseCurrency} = {refRate} {targetCurrency}
+                        </span>
+                      </div>
+                      <div className="flex flex-col items-start sm:items-end gap-1">
+                        <span className="text-[9px] uppercase font-bold tracking-widest text-luxury-slate">Last Updated</span>
+                        <span className="text-xs font-semibold text-luxury-charcoal">{lastUpdated || '—'}</span>
+                        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${ratesError ? 'bg-red-50 text-red-500' : 'bg-green-50 text-green-600'}`}>
+                          {ratesError ? '⚠ Offline rates' : '✓ Live market rates'}
+                        </span>
+                      </div>
                     </div>
-                  </form>
+
+                    {/* Quick reference rates */}
+                    {Object.keys(rates).length > 0 && (
+                      <div>
+                        <span className="text-[10px] uppercase font-bold tracking-widest text-luxury-slate block mb-2">Quick Reference · 1 USD =</span>
+                        <div className="grid grid-cols-4 gap-2">
+                          {['INR','EUR','AED','GBP'].map(c => (
+                            <div key={c} className="bg-luxury-cream rounded-xl px-3 py-2 text-center border border-luxury-gold/8">
+                              <span className="text-[9px] font-bold uppercase text-luxury-gold-dark block">{c}</span>
+                              <span className="text-xs font-bold text-luxury-charcoal">
+                                {(rates[c] ?? 0).toFixed(2)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </motion.div>
               )}
+
             </AnimatePresence>
-
           </div>
-
         </div>
-
       </div>
 
-      {/* Dynamic Toast Notifications (Corner Ticker) */}
+      {/* Toast */}
       <AnimatePresence>
         {toast && (
           <motion.div
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-6 right-6 z-50 max-w-sm w-full bg-luxury-charcoal/95 text-luxury-white border border-luxury-gold/30 rounded-2xl p-4 shadow-lg text-left backdrop-blur-md"
-          >
+            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 max-w-[calc(100vw-2rem)] sm:max-w-sm w-full bg-luxury-charcoal/95 text-luxury-white border border-luxury-gold/30 rounded-2xl p-4 shadow-lg text-left backdrop-blur-md">
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 rounded-lg bg-luxury-gold/20 flex items-center justify-center shrink-0 border border-luxury-gold/40">
                 <Compass className="w-4 h-4 text-luxury-gold" />
               </div>
-              <div className="flex flex-col">
-                <span className="text-xs font-bold text-luxury-gold">{toast.title}</span>
-                <span className="text-[10px] text-neutral-300 font-light leading-relaxed mt-0.5">{toast.body}</span>
+              <div>
+                <span className="text-xs font-bold text-luxury-gold block">{toast.title}</span>
+                <span className="text-[10px] text-neutral-300 font-light leading-relaxed mt-0.5 block">{toast.body}</span>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
     </section>
   );
 }

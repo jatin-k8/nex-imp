@@ -1,0 +1,319 @@
+﻿//function logout() {
+//    if (confirm("Are you sure you want to logout!")) {
+//        window.location.href = "/StudentLogin/Index";
+//      //  window.location.href = GetLogOutUrl();
+//    }
+//    else {
+//        return false;
+//    }
+//}
+function logout() {
+    if (confirm("Are you sure you want to logout!")) {
+        $.ajax({
+            url: '/StudentLogin/ApplicationLogout',
+            type: "GET",
+            success: function (data) {
+            },
+            error: function (err) {
+                toastr.warning('Something went wrong!', 'Warning!');
+            }
+        });
+    }
+    else {
+        return false;
+    }
+}
+var CheckOnlineRegistrationStatus = function (datee) {
+    $.ajax({
+        url: '/StudentOnlineRegistation/CheckOnlineRegistrationStatus',
+        dataType: 'json',
+        type: 'POST',
+        success: function (data) {
+
+            //alert(JSON.stringify(data.R2))
+
+            var html = '';
+            if (data.OnlineRegistrationConfigId > 0) {
+                //html += '<li><a href="#" data-toggle="collapse" data-target="#toggleDemo2" data-parent="#sidenav01" class="collapsed"><span class="fa fa-registered"></span>Online Registation<span class="caret pull-right" style="margin-top: 7px;"></span></a>';
+                //html += '<div class="collapse" id="toggleDemo2" style="height: 0px; margin-left: 12px;">';
+
+                html += '<ul class="nav nav-list"><li class="menu-back"><a href="/StudentOnlineRegistation/PersonalDetails"><i class="fa fa-user" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Personal</span><span class="label label-' + GetLabel(data.L1) + ' pull-right"><i id="iPersonal" class="fa fa-' + GetLabel_1(data.L1) + '"></i></span></a></li>';
+               
+                html += '<li class="menu-back"><a href="/StudentOnlineRegistation/AddressDetails"><i class="fa fa-map-marker" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Address</span><span class="label label-' + GetLabel(data.L2) + ' pull-right"><i id="iAddress" class="fa fa-' + GetLabel_1(data.L2) + '"></i></span></a></li>';
+                
+                html += '<li class="menu-back"><a href="/StudentOnlineRegistation/PhotoAndSignatureDetails"><i class="fa fa-photo" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Photo/Sign</span><span class="label label-' + GetLabel(data.L3) + ' pull-right"><i id="iPhoto" class="fa fa-' + GetLabel_1(data.L3) + '"></i></span></a></li>';
+                
+                html += '<li class="menu-back"><a href="/StudentOnlineRegistation/ExamAttendanceDetails"><i class="fa fa-book" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Exam Details</span><span class="label label-' + GetLabel(data.L6) + ' pull-right"><i id="iExam" class="fa fa-' + GetLabel_1(data.L6) + '"></i></span></a></li>';
+                
+                html += '<li class="menu-back"><a href="/StudentOnlineRegistation/SubjectDetails"><i class="fa fa-book" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Subject</span><span class="label label-' + GetLabel(data.L5) + ' pull-right"><i id="iSubject" class="fa fa-' + GetLabel_1(data.L5) + '"></i></span></a></li>';
+                
+                html += '<li class="menu-back"><a href="/StudentOnlineRegistation/Confirm"><i class="fa fa-check-circle" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Confirm</span><span class="label label-' + GetLabel(data.IsConfirm) + ' pull-right"><i id="iConfirm" class="fa fa-' + GetLabel_1(data.IsConfirm) + '"></i></span></a></li>';
+                
+                html += '<li class="menu-back"><a href="/StudentOnlineRegistation/OnlineRegistrationConfirmation"><i class="fa fa-print" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Application Print</span><span class="label label-' + GetLabel(data.IsConfirm) + ' pull-right"><i id="iPrint" class="fa fa-' + GetLabel_1(data.IsConfirm) + '"></i></span></a></li></ul></div></li>';
+            }
+            else {
+                html += '<ul class="nav nav-list"><li class="menu-back"><a href="#"><i class="fa fa-ban" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Registration Closed</span></a></li>';
+                html += '</ul></div></li>';
+            }
+            $('#toggleDemo2').append(html);
+        }
+    });
+};
+
+var CheckOnlineRegistrationStatusNew = function (datee) {
+    $.ajax({
+        url: '/StudentOnlineRegistation/CheckOnlineRegistrationStatusNew',
+        dataType: 'json',
+        type: 'POST',
+        success: function (data) {
+
+            //alert(JSON.stringify(data.R2))
+
+            var html = '';
+            if (data.OnlineRegistrationConfigId > 0) {
+                //html += '<li><a href="#" data-toggle="collapse" data-target="#toggleDemo2" data-parent="#sidenav01" class="collapsed"><span class="fa fa-registered"></span>Online Registation<span class="caret pull-right" style="margin-top: 7px;"></span></a>';
+                //html += '<div class="collapse" id="toggleDemo2" style="height: 0px; margin-left: 12px;">';
+
+                if (data.L1 == true) {
+                    if (data.R1 == true) {
+                        
+                        html += '<ul class="nav nav-list"><li class="menu-back"><a href="/StudPersonalDetails/PersonalDetails"><i class="fa fa-user" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Personal</span><span class="label label-' + GetLabel(data.L1) + ' pull-right"><i id="iPersonal" class="fa fa-' + GetLabel_1(data.L1) + '"></i></span></a></li>';
+                    }
+                    else {
+                        html += '<ul class="nav nav-list">'
+                    }
+                }
+                else {
+                    if (data.R1 == true) {
+
+                        //alert(JSON.stringify(data.L1));
+
+                        html += '<ul class="nav nav-list"><li class="menu-back"><a href="#"><i class="fa fa-user" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Personal</span><span class="label label-' + GetLabel(data.L1) + ' pull-right"><i id="iPersonal" class="fa fa-' + GetLabel_1(data.L1) + '"></i></span></a></li>';
+                    }
+                    else {
+                        html += '<ul class="nav nav-list">'
+                    }
+
+                }
+
+                if (data.L2 == true) {
+                    if (data.R2 == true) {
+                        html += '<li class="menu-back"><a href="/SYTYStudentAddressDetails/Index"><i class="fa fa-map-marker" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Address</span><span class="label label-' + GetLabel(data.L2) + ' pull-right"><i id="iAddress" class="fa fa-' + GetLabel_1(data.L2) + '"></i></span></a></li>';
+                    }
+                }
+                else {
+                    if (data.R2 == true) {
+                        html += '<li class="menu-back"><a href="#"><i class="fa fa-map-marker" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Address</span><span class="label label-' + GetLabel(data.L2) + ' pull-right"><i id="iAddress" class="fa fa-' + GetLabel_1(data.L2) + '"></i></span></a></li>';
+                    }
+                }
+
+                if (data.L3 == true) {
+                    if (data.R3 == true) {
+                        html += '<li class="menu-back"><a href="/PhotoAndSignatureDetail/Index"><i class="fa fa-photo" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Photo/Sign</span><span class="label label-' + GetLabel(data.L3) + ' pull-right"><i id="iPhoto" class="fa fa-' + GetLabel_1(data.L3) + '"></i></span></a></li>';
+                    }
+                }
+                else {
+                    if (data.R3 == true) {
+                        html += '<li class="menu-back"><a href="#"><i class="fa fa-photo" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Photo/Sign</span><span class="label label-' + GetLabel(data.L3) + ' pull-right"><i id="iPhoto" class="fa fa-' + GetLabel_1(data.L3) + '"></i></span></a></li>';
+                    }
+                }
+
+                if (data.L4 == true) {
+                    if (data.R4 == true) {
+                        html += '<li class="menu-back"><a href="/StudentExamDetails/Index"><i class="fa fa-book" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Exam Details</span><span class="label label-' + GetLabel(data.L4) + ' pull-right"><i id="iExam" class="fa fa-' + GetLabel_1(data.L4) + '"></i></span></a></li>';
+                    }
+                }
+                else {
+                    if (data.R4 == true) {
+                        html += '<li class="menu-back"><a href="#"><i class="fa fa-book" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Exam Details</span><span class="label label-' + GetLabel(data.L4) + ' pull-right"><i id="iExam" class="fa fa-' + GetLabel_1(data.L4) + '"></i></span></a></li>';
+                    }
+                }
+
+                if (data.L5 == true) {
+                    if (data.R5 == true) {
+                        html += '<li class="menu-back"><a href="/StudentOnlineRegistation/SubjectDetails"><i class="fa fa-book" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Subject</span><span class="label label-' + GetLabel(data.L5) + ' pull-right"><i id="iSubject" class="fa fa-' + GetLabel_1(data.L5) + '"></i></span></a></li>';
+                    }
+                }
+                else {
+                    if (data.R5 == true) {
+                        html += '<li class="menu-back"><a href="#"><i class="fa fa-book" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Subject</span><span class="label label-' + GetLabel(data.L5) + ' pull-right"><i id="iSubject" class="fa fa-' + GetLabel_1(data.L5) + '"></i></span></a></li>';
+                    }
+                }
+
+                if (data.L6 == true) {
+                    if (data.R6 == true) {
+                        html += '<li class="menu-back"><a href="/StudentPaymentRegistration/Index"><i class="fa fa-money" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Payment</span><span class="label label-' + GetLabel(data.L6) + ' pull-right"><i id="iConfirm" class="fa fa-' + GetLabel_1(data.L6) + '"></i></span></a></li>';
+                    }
+                }
+                else {
+                    if (data.R6 == true) {
+                        html += '<li class="menu-back"><a href="#"><i class="fa fa-money" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Payment</span><span class="label label-' + GetLabel(data.L6) + ' pull-right"><i id="iConfirm" class="fa fa-' + GetLabel_1(data.L6) + '"></i></span></a></li>';
+                    }
+                }
+
+                if (data.L7 == true) {
+                    if (data.R7 == true) {
+                        html += '<li class="menu-back"><a href="/StudentOnlineRegistation/Confirm"><i class="fa fa-check-circle" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Confirm</span><span class="label label-' + GetLabel(data.L7) + ' pull-right"><i id="iConfirm" class="fa fa-' + GetLabel_1(data.L7) + '"></i></span></a></li>';
+                    }
+                }
+                else {
+                    if (data.R7 == true) {
+                        html += '<li class="menu-back"><a href="#"><i class="fa fa-check-circle" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Confirm</span><span class="label label-' + GetLabel(data.L7) + ' pull-right"><i id="iConfirm" class="fa fa-' + GetLabel_1(data.L7) + '"></i></span></a></li>';
+                    }
+                }
+
+                if (data.IsConfirm == true) {
+                    if (data.R8 == true) {
+                        html += '<li class="menu-back"><a href="/StudentOnlineRegistation/OnlineRegistrationConfirmation"><i class="fa fa-print" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Application Print</span><span class="label label-' + GetLabel(data.IsConfirm) + ' pull-right"><i id="iPrint" class="fa fa-' + GetLabel_1(data.IsConfirm) + '"></i></span></a></li></ul></div></li>';
+                    }
+                    else {
+                        html += '</ul>'
+                    }
+                }
+                else {
+
+                    if (data.R8 == true) {
+                        html += '<li class="menu-back"><a href="#"><i class="fa fa-print" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Application Print</span><span class="label label-' + GetLabel(data.IsConfirm) + ' pull-right"><i id="iPrint" class="fa fa-' + GetLabel_1(data.IsConfirm) + '"></i></span></a></li></ul></div></li>';
+                    }
+                    else {
+                        html += '</ul>'
+                    }
+                }
+            }
+            else {
+                html += '<ul class="nav nav-list"><li class="menu-back"><a href="#"><i class="fa fa-ban" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Registration Closed</span></a></li>';
+                //alert(data.IsConfirm)
+                //alert(data.R8)
+                if (data.IsConfirm == true) {
+                    if (data.R8 == true) {
+                        html += '<li class="menu-back"><a href="/StudentOnlineRegistation/OnlineRegistrationConfirmationAppPrint"><i class="fa fa-print" aria-hidden="true"></i><span class="submenuss">Application Print</span><span class="label label-' + GetLabel(data.IsConfirm) + ' pull-right"><i id="iPrint" class="fa fa-' + GetLabel_1(data.IsConfirm) + '"></i></span></a></li>';
+                    }
+                    
+                }
+                html += '</ul></div></li>';
+            }
+            $('#toggleDemo4').append(html);
+        }
+    });
+};
+
+//13-04-2021 Added By Vidya Dewalkar
+
+var CheckOnlineRegistrationStatusNewForm = function (datee) {
+    $.ajax({
+        url: '/StudentOnlineRegistation/CheckOnlineRegistrationStatusNewForm',
+        dataType: 'json',
+        type: 'POST',
+        success: function (data) {
+            var html = '';
+            if (data.OnlineRegistrationConfigId > 0) {
+                if (data.SYTYInstructionId == 1) {
+                    if (data.IsConfirm == true) {
+                        html += '<li><a class="nav-link lvl-2-nav" id="InstructionSYTY" href="#"><span>Instruction </span><div class="text-align-last"><i id="iPersonal" class="fa text-' + GetLabel(false) + ' fa-' + GetLabel_1(false) + '"></i>';
+                    }
+                    else {
+                        html += '<li><a class="nav-link lvl-2-nav" id="InstructionSYTY" href="/SYTYInstruction/SYTYInstruction"><span>Instruction </span><div class="text-align-last"><i id="iPersonal" class="fa text-' + GetLabel(true) + ' fa-' + GetLabel_1(true) + '"></i>';
+                    }
+                }
+                $.each(data.Pages, function (key, item) {
+                   
+                    html += '<li><a class="nav-link lvl-2-nav" id="' + item.formname + 'SYTY" href="' + item.MenuLink + '"><span>' + item.formname + '</span><div class="text-align-last"><i id="iPersonal" class="fa text-'+ GetLabel(item.StudLinkStatus) +' fa-' + GetLabel_1(item.StudLinkStatus) + '"></i></div></a></li>';
+                });
+                }
+                else {
+                html += '<ul class="nav nav-list"><li class="menu-back"><a href="#"><i class="fa fa-ban" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Registration Closed</span></a></li>';
+                if (data.IsConfirm == true) {
+                    if (data.R8 == true) {
+                        html += '<li class="menu-back"><a href="/StudentOnlineRegistation/OnlineRegistrationConfirmationAppPrint"><i class="fa fa-print" aria-hidden="true"></i><span class="submenuss">Application Print</span><span class="label label-' + GetLabel(data.IsConfirm) + ' pull-right"><i id="iPrint" class="fa fa-' + GetLabel_1(data.IsConfirm) + '"></i></span></a></li>';
+                    }
+
+                }
+                html += '</li>';
+            }
+            $('#toggleDemo2').append(html);
+        }
+    });
+
+    // NEP SUbject 
+    $.ajax({
+        url: '/NEPEvenCourseConfirm/GetNepSubjectOnlReg',
+        dataType: 'json',
+        type: 'POST',
+        success: function (data) {
+
+            //alert(JSON.stringify(data.R2))
+
+            var html = '';
+            if (data.OnlineRegistrationConfigId > 0) {
+                if (data.IsConfirm == true) {
+                    html += '<li><a class="nav-link lvl-2-nav" id="' + 'NEP Subject' + 'SYTY" href="' + '#' + '"><span>' + 'NEP Subject' + '</span><div class="text-align-last"><i id="iPersonal" class="fa text-' + GetLabel(false) + ' fa-' + GetLabel_1(false) + '"></i></div></a></li>';
+                    html += '<li><a class="nav-link lvl-2-nav" id="' + 'Confirm Application' + 'SYTY" href="' + '#' + '"><span>' + 'Confirm Application' + '</span><div class="text-align-last"><i id="iPersonal" class="fa text-' + GetLabel(false) + ' fa-' + GetLabel_1(false) + '"></i></div></a></li>';
+                    html += '<li><a class="nav-link lvl-2-nav" id="' + 'Print Application' + 'SYTY" href="' + '/NEPEvenCourseConfirm/PrintApplication' + '"><span>' + 'Print Application' + '</span><div class="text-align-last"><i id="iPersonal" class="fa text-' + GetLabel(data.IsConfirm) + ' fa-' + GetLabel_1(data.IsConfirm) + '"></i></div></a></li>';
+                }
+                else {
+                    html += '<li><a class="nav-link lvl-2-nav" id="' + 'NEP Subject' + 'SYTY" href="' + '/NEPMajorEvenCourseSubject/Index' + '"><span>' + 'NEP Subject' + '</span><div class="text-align-last"><i id="iPersonal" class="fa text-' + GetLabel(true) + ' fa-' + GetLabel_1(true) + '"></i></div></a></li>';
+                    html += '<li><a class="nav-link lvl-2-nav" id="' + 'Confirm Application' + 'SYTY" href="' + '#' + '"><span>' + 'Confirm Application' + '</span><div class="text-align-last"><i id="iPersonal" class="fa text-' + GetLabel(false) + ' fa-' + GetLabel_1(false) + '"></i></div></a></li>';
+                    html += '<li><a class="nav-link lvl-2-nav" id="' + 'Print Application' + 'SYTY" href="' + '/NEPEvenCourseConfirm/PrintApplication' + '"><span>' + 'Print Application' + '</span><div class="text-align-last"><i id="iPersonal" class="fa text-' + GetLabel(data.IsConfirm) + ' fa-' + GetLabel_1(data.IsConfirm) + '"></i></div></a></li>';
+                }
+            }
+            else {
+                html += '<ul class="nav nav-list"><li class="menu-back"><a href="#"><i class="fa fa-ban" aria-hidden="true"></i><span class="submenuss" style="font-style: italic">Registration Closed</span></a></li>';
+            }
+            $('#toggleNEPEvenCourse').append(html);
+        }
+
+    });
+};
+
+// END
+
+var CheckStudentAccessForItle = function () {
+
+    $('#Itle_Student_Layout').hide();
+    $.ajax({
+        url: '/StudentOnlineRegistation/CheckCollegeApplicable',
+        dataType: 'json',
+        type: 'POST',
+        success: function (data) {
+
+            if (data == 1) {
+
+                $('#Itle_Student_Layout').show();
+            }
+            else {
+                $('#Itle_Student_Layout').hide();
+            }
+
+        }
+
+    })
+
+
+}
+
+function GetLabel(valuess) {
+    switch (valuess) {
+        case true:
+            return "success";
+        case false:
+            return "danger";
+    }
+}
+
+function GetLabel_1(valuess) {
+    switch (valuess) {
+        case true:
+            return "check-square";
+        case false:
+            return "square";
+    }
+}
+
+//html += '<li><a href="#" data-toggle="collapse" data-target="#toggleDemo2" data-parent="#sidenav01" class="collapsed"><span class="fa fa-registered"></span>Online Registation<span class="caret pull-right" style="margin-top: 7px;"></span></a>';
+//html += '<div class="collapse" id="toggleDemo2" style="height: 0px; margin-left: 12px;"><ul class="nav nav-list">';
+//html += '<li class="menu-back"><a href="/StudentOnlineRegistation/PersonalDetails"><i class="fa fa-user" aria-hidden="true"></i><span class="submenuss">Personal</span><span class="label label-' + GetLabel(data.L1) + ' pull-right"><i id="iPersonal" class="fa fa-' + GetLabel_1(data.L1) + '"></i></span></a></li>';
+//html += '<li class="menu-back"><a href="/StudentOnlineRegistation/AddressDetails"><i class="fa fa-map-marker" aria-hidden="true"></i><span class="submenuss">Address</span><span class="label label-' + GetLabel(data.L2) + ' pull-right"><i id="iAddress" class="fa fa-' + GetLabel_1(data.L2) + '"></i></span></a></li>';
+//html += '<li class="menu-back"><a href="/StudentOnlineRegistation/PhotoAndSignatureDetails"><i class="fa fa-photo" aria-hidden="true"></i><span class="submenuss">Photo/Sign</span><span class="label label-' + GetLabel(data.L3) + ' pull-right"><i id="iPhoto" class="fa fa-' + GetLabel_1(data.L3) + '"></i></span></a></li>';
+//html += '<li class="menu-back"><a href="/StudentOnlineRegistation/SubjectDetails"><i class="fa fa-book" aria-hidden="true"></i><span class="submenuss">Subject</span><span class="label label-' + GetLabel(data.L4) + ' pull-right"><i id="iSubject" class="fa fa-' + GetLabel_1(data.L4) + '"></i></span></a></li>';
+//html += '<li class="menu-back"><a href="/StudentOnlineRegistation/Confirm"><i class="fa fa-check-circle" aria-hidden="true"></i><span class="submenuss">Confirm</span><span class="label label-' + GetLabel(data.IsConfirm) + ' pull-right"><i id="iConfirm" class="fa fa-' + GetLabel_1(data.IsConfirm) + '"></i></span></a></li>';
+//html += '<li class="menu-back"><a href="/StudentOnlineRegistation/OnlineRegistrationConfirmation"><i class="fa fa-print" aria-hidden="true"></i><span class="submenuss">Application Print</span><span class="label label-' + GetLabel(data.IsConfirm) + ' pull-right"><i id="iPrint" class="fa fa-' + GetLabel_1(data.IsConfirm) + '"></i></span></a></li></ul></div></li>';

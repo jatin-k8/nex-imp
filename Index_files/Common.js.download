@@ -1,0 +1,55 @@
+﻿
+var RenderDropDown = function (control, data, id, value) {
+    control.empty();
+    $.each(data, function () {
+        control.append($("<option />").val(this[id]).text(this[value]));
+    }); control.prepend($("<option selected='selected' />").val(0).text("Please Select"));
+};
+
+var GetLogOutUrl = function () {
+    return "/StudentLogin/Index/";
+}
+
+//use for document upload
+var GetStorageContainerName = function () {
+   // return "clouddevelopmentcontainer"; // development
+    return "cloudproductioncontainer"; // live
+}
+
+//use for photo/sign upload
+var GetStorageContainerNamePhotoSign = function () {
+   // return "cloudtestdevelopmentphotosign"; // development
+    return "cloudphotosign"; // live
+}
+
+var GetAPIURL = function () {
+    //return "http://localhost:44675/";
+   // return "http://cloudmvcapi.mastersofterp.in/";  //Testing
+           // return "https://cimsapiuat.mastersofterp.in/"; // UAT
+            return "https://cimsapi.mastersofterp.in/";
+}
+
+var GetReportAPI = function () {
+    //return "http://localhost:61438/";
+   // return "https://cloudmvcreportapi.mastersofterp.in/" //development
+   // return "https://cimsuatreportapi.mastersofterp.in/" //UAT
+    return "https://cimsreportapi.mastersofterp.in/" //live
+}
+
+var GetFeePyrURL = function () {
+    // DEVelopment
+   // return "http://localhost:52597/";
+
+    // Testing
+    //return "http://demosplit.feepayr.com/";
+
+    //Live
+    return "https://www.feepayr.com/";
+
+   // return "https://uat.feepayr.com/";
+}
+
+
+
+
+$('.top-nav-icon').popover({ trigger: "hover" });
