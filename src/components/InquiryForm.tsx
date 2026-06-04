@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, MessageCircle, Linkedin } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, MessageCircle, Linkedin, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 interface InquiryFormProps {
   prefilledProduct?: string;
@@ -16,34 +16,74 @@ export default function InquiryForm({ prefilledProduct = '' }: InquiryFormProps)
     message: ''
   });
 
+  // Track submission details
+  const [submittedData, setSubmittedData] = useState<typeof formData | null>(null);
+
   React.useEffect(() => {
     if (prefilledProduct) {
       setFormData(prev => ({ ...prev, product: prefilledProduct }));
     }
   }, [prefilledProduct]);
 
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const getWhatsAppLink = (data: typeof formData) => {
+    const baseText = `Hello Hrushabh Gadiya (Nexorra Impex),\n\nI would like to request a commercial quote for:\n\n*Product:* ${data.product || 'General Enquiry'}\n*Company:* ${data.company}\n*Contact Person:* ${data.name}\n*Destination Country:* ${data.country}\n*Email:* ${data.email}\n*Specifications:* ${data.message || 'N/A'}\n\nPlease share export terms and container pricing.`;
+    return `https://wa.me/917744096751?text=${encodeURIComponent(baseText)}`;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.company || !formData.country) {
       alert("Please fill out all required fields.");
       return;
     }
 
-    setIsSubmitted(true);
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({
-        name: '',
-        company: '',
-        country: '',
-        email: '',
-        product: '',
-        message: ''
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify({
+          access_key: "aa19596b-df0a-4523-965e-7a25539978d0",
+          subject: `New B2B Export Inquiry from ${formData.company} (${formData.name})`,
+          from_name: "Nexorra Impex B2B Portal",
+          name: formData.name,
+          email: formData.email,
+          company: formData.company,
+          country: formData.country,
+          product: formData.product || "General Inquiry",
+          message: formData.message
+        })
       });
-      alert(`Thank you, ${formData.name}! Your global export inquiry has been submitted. Our export desk will email you a complete pricing specification sheet shortly.`);
-    }, 1500);
+
+      const result = await response.json();
+      if (result.success) {
+        setSubmitStatus('success');
+        setSubmittedData({ ...formData });
+        setFormData({
+          name: '',
+          company: '',
+          country: '',
+          email: '',
+          product: '',
+          message: ''
+        });
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch (error) {
+      console.error("Web3Forms submission error:", error);
+      setSubmitStatus('error');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -143,6 +183,65 @@ export default function InquiryForm({ prefilledProduct = '' }: InquiryFormProps)
           {/* Inquiry Form (Right Column) */}
           <div className="lg:col-span-7">
             <div className="bg-luxury-white border border-luxury-gold/15 rounded-3xl p-6 md:p-8 shadow-premium text-left">
+              
+              {submitStatus === 'success' && submittedData && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-6 rounded-2xl bg-luxury-gold/10 border border-luxury-gold/30 text-center flex flex-col items-center gap-4 mb-6"
+                >
+                  <CheckCircle2 className="w-12 h-12 text-luxury-gold-dark" />
+                  <div className="text-left md:text-center">
+                    <h4 className="text-base font-bold font-luxury text-luxury-charcoal">Inquiry Submitted Successfully</h4>
+                    <p className="text-xs text-luxury-slate font-light mt-1.5 leading-relaxed">
+                      Thank you! Your procurement requirements have been dispatched to our sourcing desk at <strong>nexorra.impex95@gmail.com</strong>. We will review and send your corporate pricing sheets shortly.
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3 w-full mt-2">
+                    <a
+                      href={getWhatsAppLink(submittedData)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex-1 py-3 px-4 rounded-xl bg-[#25D366] text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-md"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      Chat on WhatsApp
+                    </a>
+                    <button
+                      onClick={() => setSubmitStatus('idle')}
+                      className="flex-1 py-3 px-4 rounded-xl border border-luxury-gold/35 text-luxury-charcoal text-xs font-bold uppercase tracking-wider flex items-center justify-center hover:bg-luxury-cream transition-all"
+                    >
+                      Submit Another Inquiry
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+              {submitStatus === 'error' && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-6 rounded-2xl bg-red-50 border border-red-200 text-center flex flex-col items-center gap-4 mb-6"
+                >
+                  <AlertTriangle className="w-12 h-12 text-red-500" />
+                  <div className="text-left md:text-center">
+                    <h4 className="text-base font-bold text-red-800">Email Submission Delayed</h4>
+                    <p className="text-xs text-red-600 font-light mt-1.5 leading-relaxed">
+                      Our email delivery service is currently busy. To prevent any trade delays, please submit your inquiry directly to our managing director on WhatsApp.
+                    </p>
+                  </div>
+                  <a
+                    href={getWhatsAppLink(formData)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-3 px-4 rounded-xl bg-[#25D366] text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-md"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    Submit to WhatsApp
+                  </a>
+                </motion.div>
+              )}
+
               <form onSubmit={handleSubmit} className="flex flex-col gap-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="flex flex-col gap-1.5">
@@ -207,9 +306,12 @@ export default function InquiryForm({ prefilledProduct = '' }: InquiryFormProps)
                     <option value="Onion Powder">Onion Powder</option>
                     <option value="Onion Flakes">Onion Flakes</option>
                     <option value="Garlic Granules">Garlic Granules</option>
+                    <option value="Fresh Premium Papaya">Fresh Premium Papaya</option>
                     <option value="Green Chillies">Green Chillies</option>
                     <option value="Indian Spices">Indian Spices</option>
                     <option value="Dehydrated Ingredients">Dehydrated Ingredients</option>
+                    <option value="Premium Packaged Mineral Water">Premium Packaged Mineral Water</option>
+                    <option value="Fruit Pulps & Concentrates">Fruit Pulps & Concentrates</option>
                     <option value="Tea & Coffee Blends">Tea & Coffee Blends</option>
                     <option value="Cotton & Textile Products">Cotton & Textile Products</option>
                     <option value="Traditional Handicrafts">Traditional Handicrafts</option>
@@ -230,10 +332,11 @@ export default function InquiryForm({ prefilledProduct = '' }: InquiryFormProps)
 
                 <button
                   type="submit"
-                  className="w-full py-4 bg-gradient-to-r from-luxury-gold-dark to-luxury-gold text-luxury-white hover:from-luxury-gold hover:to-luxury-gold-light text-xs font-bold uppercase tracking-widest rounded-xl transition-all duration-300 shadow-premium flex items-center justify-center gap-2"
+                  disabled={isSubmitting}
+                  className="w-full py-4 bg-gradient-to-r from-luxury-gold-dark to-luxury-gold text-luxury-white hover:from-luxury-gold hover:to-luxury-gold-light text-xs font-bold uppercase tracking-widest rounded-xl transition-all duration-300 shadow-premium flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  <Send className="w-4 h-4" />
-                  Submit Export Inquiry
+                  <Send className="w-4 h-4 animate-pulse" />
+                  {isSubmitting ? "Submitting Inquiry..." : "Submit Export Inquiry"}
                 </button>
               </form>
             </div>
