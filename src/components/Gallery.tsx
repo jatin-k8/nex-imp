@@ -6,11 +6,10 @@ export default function Gallery() {
     { id: 1, title: "Container Port Operations", category: "Logistics", image: "https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&q=80&w=600" },
     { id: 2, title: "Premium Spice Sorting", category: "Agriculture", image: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&q=80&w=600" },
     { id: 3, title: "B2B Bulk Warehouse", category: "Storage", image: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=600" },
-    { id: 4, title: "Textile Combed Yarns", category: "Textiles", image: "https://images.unsplash.com/photo-1528892951291-009c663ce843?auto=format&fit=crop&q=80&w=600" },
-    { id: 5, title: "Artisanal Brass Crafting", category: "Handicrafts", image: "https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&q=80&w=600" },
-    { id: 6, title: "Industrial Cargo Loading", category: "Export Operations", image: "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&q=80&w=600" },
-    { id: 7, title: "Phytosanitary Inspections", category: "Quality Control", image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=600" },
-    { id: 8, title: "Ocean Freight Transit", category: "Global Routes", image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=600" }
+    { id: 4, title: "Artisanal Brass Crafting", category: "Handicrafts", image: "https://images.unsplash.com/photo-1618220179428-22790b461013?auto=format&fit=crop&q=80&w=600" },
+    { id: 5, title: "Industrial Cargo Loading", category: "Export Operations", image: "https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?auto=format&fit=crop&q=80&w=600" },
+    { id: 6, title: "Phytosanitary Inspections", category: "Quality Control", image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=600" },
+    { id: 7, title: "Ocean Freight Transit", category: "Global Routes", image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=600" }
   ];
 
   return (
