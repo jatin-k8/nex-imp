@@ -63,7 +63,7 @@ export default function Products({ onQuoteRequest }: ProductsProps) {
       moq: "5 Metric Tons",
       image: "images/gg.jpg",
       grade: "Premium Standard",
-      gallery: ["images/gg.jpg","images/gc_1.webp","images/gc_2.webp"]
+      gallery: ["images/gg.jpg"]
     },
     {
       id: "green-chillies",

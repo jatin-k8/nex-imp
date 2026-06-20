@@ -53,7 +53,12 @@ export default function SupportAndWidgets() {
   };
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (chatMessages.length > 1 || isTyping) {
+      messagesEndRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest'
+      });
+    }
   }, [chatMessages, isTyping]);
 
   // ── CARGO TRACKER ────────────────────────────────────────────────
